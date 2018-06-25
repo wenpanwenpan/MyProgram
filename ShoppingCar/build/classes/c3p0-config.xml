@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<c3p0-config>
+    <named-config name="helloC3P0"> 
+        <!-- 指定连接数据源的基本属性   oracle -->
+        <property name="jdbcUrl">jdbc:oracle:thin:@localhost:1522:ORCL</property>
+        <property name="driverClass">oracle.jdbc.driver.OracleDriver</property>
+        <property name="user">scott</property>
+        <property name="password">tiger</property> 
+        
+        
+        
+　　     <!--当连接池中的连接耗尽的时候c3p0一次同时获取的连接数。即当连接池中可用连接数不够时，向数据库服务器申请连接Default: 3 -->
+        <property name="acquireIncrement">3</property>
+　　     <!-- 初始化数据库连接池时连接的数量 -->
+        <property name="initialPoolSize">10</property>
+        <!-- 数据库连接池中的最小的数据库连接数 -->
+        <property name="minPoolSize">2</property>
+        <!-- 数据库连接池中的最大的数据库连接数 -->
+        <property name="maxPoolSize">10</property>
+    </named-config>
+    
+    <default-config> 
+        <!-- 指定连接数据源的基本属性 -->
+        <property name="jdbcUrl">jdbc:oracle:thin:@localhost:1522:ORCL</property>
+        <property name="driverClass">oracle.jdbc.driver.OracleDriver</property>
+        <property name="user">scott</property>
+        <property name="password">tiger</property> 
+
+    </default-config>
+</c3p0-config>
