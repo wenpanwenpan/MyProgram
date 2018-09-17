@@ -1,5 +1,12 @@
-# MyShoppingCar
-this is my Shopping Car Program
+# MyProgram
 
-这是我自己编写的一个购物车程序，非常非常的简陋。
-但是。。。
+this is my program write by myself.
+
+项目清单：
+
+1.购物车程序开发。
+
+2.购物车程序开发。
+
+
+
