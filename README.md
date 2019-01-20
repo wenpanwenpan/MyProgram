@@ -12,3 +12,4 @@ this is my program write by myself.
 
 4.基于SSM的CRUD程序开发（使用SSM+Maven+Bootstrap+Ajax+Jquery）
 
+5.基于Hadoop,flume,kafka,MapReduce,redis,mysql,Hbase,SSM,echarts开发的大数据电信客服项目，该项目主要使用了接口编程思想
