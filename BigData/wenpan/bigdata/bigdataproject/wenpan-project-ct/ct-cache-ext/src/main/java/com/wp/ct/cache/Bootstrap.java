@@ -1,0 +1,114 @@
+package com.wp.ct.cache;
+
+import com.wp.ct.common.util.JDBCUtil;
+import redis.clients.jedis.Jedis;
+
+import java.sql.Connection;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.Map;
+
+/**
+ * 使用redis做缓存：将MySQL中的数据查询出来，然后缓存到redis中
+ * Created by Administrator on 2019/1/15.
+ * 启动缓存客户端，向redis中增加缓存数据
+ */
+public class Bootstrap {
+    public static void main(String[] args) {
+
+        //读取mysql中的数据
+        //将两张表缓存到内存中
+        Map<String,Integer> userMap = new HashMap<>();
+        Map<String,Integer> dateMap = new HashMap<>();
+
+        Connection connection = null;
+        PreparedStatement pstat = null;
+        ResultSet rs = null;
+        try {
+
+            connection = JDBCUtil.getConnection();
+
+            String queryUserSql = "select id,tel from ct_user";
+            pstat = connection.prepareStatement(queryUserSql);
+            rs = pstat.executeQuery();
+
+            while (rs.next()){
+                Integer id = rs.getInt(1);
+                String tel = rs.getString(2);
+
+                //将用户的Tel和id从数据库中取出，保存到map中，相当于加载到缓存中，方便后面做id映射
+                userMap.put(tel,id);
+            }
+            rs.close();
+
+            //查询时间
+            String queryDateSql = "select id,year,month,day from ct_date";
+            pstat = connection.prepareStatement(queryDateSql);
+            rs = pstat.executeQuery();
+            while (rs.next()){
+                Integer id = rs.getInt(1);
+                String year = rs.getString(2);
+                String month = rs.getString(3);
+                //保证月份是两位数
+                if(month.length() == 1){
+                    month = "0" + month;
+                }
+                String day = rs.getString(4);
+                if(day.length() == 1){
+                    day = "0" + day;
+                }
+
+                //将用户的Tel和id从数据库中取出，保存到map中，相当于加载到缓存中，方便后面做id映射
+                dateMap.put(year + month + day,id);
+            }
+        }catch (Exception e){
+            e.printStackTrace();
+        }finally {
+            if(rs != null){
+                try {
+                    rs.close();
+                } catch (SQLException e) {
+                    e.printStackTrace();
+                }
+            }
+            if(pstat != null){
+                try {
+                    pstat.close();
+                } catch (SQLException e) {
+                    e.printStackTrace();
+                }
+            }
+            if (connection != null){
+                try {
+                    connection.close();
+                } catch (SQLException e) {
+                    e.printStackTrace();
+                }
+            }
+        }
+
+        //System.out.println(userMap.size());
+        //System.out.println(dateMap.size());
+        //向redis中存储telid数据
+       Jedis jedis = new Jedis("cMaster",6379);
+        Iterator<String> keyIterator = userMap.keySet().iterator();
+        while (keyIterator.hasNext()){
+            String key = keyIterator.next();
+            Integer value = userMap.get(key);       //通过电话号码取得id然后存放在redis中
+            //System.out.println("key: " + key + "======value: " + value);
+            jedis.hset("ct_user",key,"" + value);
+        }
+
+        //将时间和id缓存到redis中
+        keyIterator = dateMap.keySet().iterator();
+        while (keyIterator.hasNext()){
+            String key = keyIterator.next();
+            Integer value = dateMap.get(key);       //通过电话号码取得id然后存放在redis中
+            jedis.hset("ct_date",key,"" + value);
+            //System.out.println("key: " + key + "======value: " + value);
+        }
+    }
+}

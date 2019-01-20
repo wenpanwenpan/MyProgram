@@ -1,0 +1,139 @@
+#启动生产者生产数据：
+#启动zookeeper： bin/zookeeper-server-start.sh config/zookeeper.properties &
+#启动kafka：bin/kafka-server-start.sh config/server.properties &
+#创建kafka的topic：bin/kafka-topics.sh --zookeeper cMaster:2181 --create --topic ct --partitions 3 --replication-factor 2
+#创建kafka控制台消费者：bin/kafka-console-consumer.sh --zookeeper cMaster:2181 --topic ct
+#启动flume开始监控文件： bin/flume-ng agent -c conf/ -n a1 -f /opt/module/data/flume-2-kafka.conf 
+#查看topic：bin/kafka-topics.sh --zookeeper cMaster:2181 --list
+#启动生产者jar包：java -jar ct-producer.jar /opt/module/data/contact.log /opt/module/data/call.log
+
+
+如果协处理器代码有问题，会导致hbase的RegionServer挂掉
+
+
+整个流程：
+启动生产者生产数据，启动flume监控日志，启动kafka，在IDEA中启动消费者消费topic中的数据并且写入到hbase中，使用yarn启动分析jar包开始分析数据，然后将结果存入mysql中，
+最后从mysql中取出数据，然后利用图标进行展示。
+
+
+数据生产与消费流程：
+1.启动zookeeper，启动kafka创建topic ct,启动生产者生产数据（ct-producer.jar）,启动flume监控生产的数据文件，将数据采集到kafka消费者的topic中
+	在idea中启动消费者，将topic中的数据消费到hbase中。
+
+
+
+数据分析流程：
+1. 先启动hadoop，再启动zookeeper，再启动hbase（注意：zookeeper没有启动时，先启动hbase则HMaster会挂掉，因为我的hbase配置了高可用）
+2. 启动数据分析jar包：/usr/local/hadoop/hadoop-2.9.1/bin/yarn jar ct_analysis_jar/ct-analysis.jar
+3. 查看mysql中是否已经存放了分析结果
+
+使用redis作为缓存，将MySQL中的用户表和日期表的数据读取出来，缓存到redis中，再从redis中将telid和dateid读取出来存放到mysql的ct_call表中。
+首先先运行ct-cacha-ext模块的bootstrap类将数据缓存到redis中，（将分析模块重新打包，将ct-analysis.jar重新拷贝到Linux中的/opt/module/data目录下的分析）
+包中进行替换），然后将redis依赖的两个jar包（jedis-2.8.1.jar和commons-pool2-2.4.2.jar）拷贝到hadoop中的share目录的common下，再将这两个jar包进行分发到
+集群中的机器上。最后就可以开始执行分析了。最后就将数据完整的插入到mysql中了。
+
+
+      
+
+关于jar包：
+	先将协处理器包和公用包拷贝到hbase的lib目录下，并且分发到集群中。
+	再将分析包拷贝到data目录下
+	再将mysql驱动包拷贝到hadoop的share目录下的comm目录下并进行分发
+      
+	  
+启动redis：到redis安装目录下，redis-server /myredis/redis.conf
+启动redis客户端：redis-cli -p 6379
+关闭redis：先shutdown在exit
+
+
+
+
+
+
+map端取得的rowkey============》:0_13068951256_20180731054430_15833659410_2759_1    通话时间============》：2759
+map端取得的rowkey============》:0_13068951256_20181026101443_15833659410_2669_1    通话时间============》：2669
+map端取得的rowkey============》:0_13548112164_20180226030233_13548962544_0451_1    通话时间============》：0451
+map端取得的rowkey============》:0_13548112164_20181118215836_15833659410_2725_1    通话时间============》：2725
+map端取得的rowkey============》:0_13548962544_20180202205643_13548112164_1712_1    通话时间============》：1712
+map端取得的rowkey============》:0_13548962544_20180802022358_15896547821_2496_1    通话时间============》：2496
+map端取得的rowkey============》:0_13548962544_20180804114655_15896547821_0493_1    通话时间============》：0493
+map端取得的rowkey============》:0_13548962544_20180822030323_13548112164_1176_1    通话时间============》：1176
+map端取得的rowkey============》:0_15833659410_20180525193715_15896547821_2039_1    通话时间============》：2039
+map端取得的rowkey============》:0_15833659410_20180715214731_13548112164_0496_1    通话时间============》：0496
+map端取得的rowkey============》:0_15833659410_20180904225858_15896547821_2042_1    通话时间============》：2042
+map端取得的rowkey============》:0_15896547821_20180123113518_15833659410_1489_1    通话时间============》：1489
+map端取得的rowkey============》:0_15896547821_20181010010523_15833659410_0779_1    通话时间============》：0779
+map端取得的rowkey============》:0_15896547821_20181010071740_13068951256_0652_1    通话时间============》：0652
+map端取得的rowkey============》:0_15896547821_20181230192935_13548112164_2037_1    通话时间============》：2037
+2019-01-16 18:24:31,898 INFO  [LocalJobRunner Map Task Executor #0] mapred.LocalJobRunner: 
+2019-01-16 18:24:31,902 INFO  [LocalJobRunner Map Task Executor #0] client.ConnectionManager$HConnectionImplementation: Closing zookeeper sessionid=0x3685595f0de000f
+2019-01-16 18:24:31,905 INFO  [LocalJobRunner Map Task Executor #0] zookeeper.ZooKeeper: Session: 0x3685595f0de000f closed
+2019-01-16 18:24:31,905 INFO  [LocalJobRunner Map Task Executor #0-EventThread] zookeeper.ClientCnxn: EventThread shut down
+2019-01-16 18:24:31,916 INFO  [LocalJobRunner Map Task Executor #0] mapred.MapTask: Starting flush of map output
+2019-01-16 18:24:31,916 INFO  [LocalJobRunner Map Task Executor #0] mapred.MapTask: Spilling map output
+2019-01-16 18:24:31,916 INFO  [LocalJobRunner Map Task Executor #0] mapred.MapTask: bufstart = 0; bufend = 2160; bufvoid = 104857600
+2019-01-16 18:24:31,916 INFO  [LocalJobRunner Map Task Executor #0] mapred.MapTask: kvstart = 26214396(104857584); kvend = 26214040(104856160); length = 357/6553600
+2019-01-16 18:24:31,961 INFO  [LocalJobRunner Map Task Executor #0] mapred.MapTask: Finished spill 0
+2019-01-16 18:24:31,975 INFO  [LocalJobRunner Map Task Executor #0] mapred.Task: Task:attempt_local1127430189_0001_m_000000_0 is done. And is in the process of committing
+2019-01-16 18:24:32,011 INFO  [LocalJobRunner Map Task Executor #0] mapred.LocalJobRunner: map
+2019-01-16 18:24:32,011 INFO  [LocalJobRunner Map Task Executor #0] mapred.Task: Task 'attempt_local1127430189_0001_m_000000_0' done.
+2019-01-16 18:24:32,011 INFO  [LocalJobRunner Map Task Executor #0] mapred.LocalJobRunner: Finishing task: attempt_local1127430189_0001_m_000000_0
+2019-01-16 18:24:32,011 INFO  [LocalJobRunner Map Task Executor #0] mapred.LocalJobRunner: Starting task: attempt_local1127430189_0001_m_000001_0
+2019-01-16 18:24:32,012 INFO  [LocalJobRunner Map Task Executor #0] util.ProcfsBasedProcessTree: ProcfsBasedProcessTree currently is supported only on Linux.
+2019-01-16 18:24:32,070 INFO  [LocalJobRunner Map Task Executor #0] mapred.Task:  Using ResourceCalculatorProcessTree : org.apache.hadoop.yarn.util.WindowsBasedProcessTree@3bb7baba
+2019-01-16 18:24:32,071 INFO  [LocalJobRunner Map Task Executor #0] mapred.MapTask: Processing split: HBase table split(table name: ct:calllog, scan: {"loadColumnFamiliesOnDemand":null,"startRow":"","stopRow":"","batch":-1,"cacheBlocks":true,"totalColumns":1,"maxResultSize":-1,"families":{"caller":["ALL"]},"caching":500,"maxVersions":1,"timeRange":[0,9223372036854775807]}, start row: 0|, end row: , region location: cSlave1, encoded region name: 602d92e5102f0874710af10d87a8a0c2)
+2019-01-16 18:24:32,073 INFO  [LocalJobRunner Map Task Executor #0] zookeeper.RecoverableZooKeeper: Process identifier=hconnection-0x6fb83e30 connecting to ZooKeeper ensemble=cMaster:2181,cSlave0:2181,cSlave1:2181
+2019-01-16 18:24:32,073 INFO  [LocalJobRunner Map Task Executor #0] zookeeper.ZooKeeper: Initiating client connection, connectString=cMaster:2181,cSlave0:2181,cSlave1:2181 sessionTimeout=90000 watcher=org.apache.hadoop.hbase.zookeeper.PendingWatcher@69dc2b17
+2019-01-16 18:24:32,077 INFO  [LocalJobRunner Map Task Executor #0-SendThread(cMaster:2181)] zookeeper.ClientCnxn: Opening socket connection to server cMaster/192.168.1.100:2181. Will not attempt to authenticate using SASL (unknown error)
+2019-01-16 18:24:32,079 INFO  [LocalJobRunner Map Task Executor #0-SendThread(cMaster:2181)] zookeeper.ClientCnxn: Socket connection established to cMaster/192.168.1.100:2181, initiating session
+2019-01-16 18:24:32,141 INFO  [LocalJobRunner Map Task Executor #0-SendThread(cMaster:2181)] zookeeper.ClientCnxn: Session establishment complete on server cMaster/192.168.1.100:2181, sessionid = 0x2685595f0d90017, negotiated timeout = 40000
+2019-01-16 18:24:32,152 INFO  [LocalJobRunner Map Task Executor #0] mapreduce.TableInputFormatBase: Input split length: 0 bytes.
+2019-01-16 18:24:32,152 INFO  [LocalJobRunner Map Task Executor #0] mapred.MapTask: Map output collector class = org.apache.hadoop.mapred.MapTask$MapOutputBuffer
+2019-01-16 18:24:32,193 INFO  [LocalJobRunner Map Task Executor #0] mapred.MapTask: (EQUATOR) 0 kvi 26214396(104857584)
+2019-01-16 18:24:32,193 INFO  [LocalJobRunner Map Task Executor #0] mapred.MapTask: mapreduce.task.io.sort.mb: 100
+2019-01-16 18:24:32,193 INFO  [LocalJobRunner Map Task Executor #0] mapred.MapTask: soft limit at 83886080
+2019-01-16 18:24:32,193 INFO  [LocalJobRunner Map Task Executor #0] mapred.MapTask: bufstart = 0; bufvoid = 104857600
+2019-01-16 18:24:32,193 INFO  [LocalJobRunner Map Task Executor #0] mapred.MapTask: kvstart = 26214396; length = 6553600
+map端取得的rowkey============》:1_13068951256_20180201140409_13548962544_1251_1    通话时间============》：1251
+map端取得的rowkey============》:1_13068951256_20180216223745_15896547821_1804_1    通话时间============》：1804
+map端取得的rowkey============》:1_13068951256_20180617001837_13548112164_0533_1    通话时间============》：0533
+map端取得的rowkey============》:1_13068951256_20181112141614_13548112164_2642_1    通话时间============》：2642
+map端取得的rowkey============》:1_13548112164_20180124135800_13548962544_0211_1    通话时间============》：0211
+map端取得的rowkey============》:1_13548112164_20181018004330_15833659410_0622_1    通话时间============》：0622
+map端取得的rowkey============》:1_13548112164_20181217193149_13548962544_2392_1    通话时间============》：2392
+map端取得的rowkey============》:1_13548962544_20180106021705_15833659410_1084_1    通话时间============》：1084
+map端取得的rowkey============》:1_13548962544_20180316094111_13548112164_0519_1    通话时间============》：0519
+map端取得的rowkey============》:1_13548962544_20180522132047_13068951256_0263_1    通话时间============》：0263
+map端取得的rowkey============》:1_13548962544_20180527031813_15833659410_1870_1    通话时间============》：1870
+map端取得的rowkey============》:1_13548962544_20181022100356_15833659410_2847_1    通话时间============》：2847
+map端取得的rowkey============》:1_13548962544_20181029050111_13068951256_1328_1    通话时间============》：1328
+map端取得的rowkey============》:1_15833659410_20180226001315_13068951256_1315_1    通话时间============》：1315
+map端取得的rowkey============》:1_15833659410_20180824173118_13548112164_2533_1    通话时间============》：2533
+map端取得的rowkey============》:1_15833659410_20181111052851_13068951256_2736_1    通话时间============》：2736
+map端取得的rowkey============》:1_15896547821_20180603201842_15833659410_1670_1    通话时间============》：1670
+map端取得的rowkey============》:1_15896547821_20180806173706_15833659410_2326_1    通话时间============》：2326
+
+
+13548112164	文攀
+14451235487	李靖
+13584566121	胡月
+15886985544	赵高权
+13548699654	杨丽萍
+13001565655	李陵泰
+13012554888	马正攀
+13889521225	周建
+13895655787	杨东
+17889565423	刘挺
+13566932586	叶志军
+15202865662	张成福
+15202856955	马云
+15205856289	徐志远
+15202459887	赵德语
+15256558477	王春林
+13501258964	余双荣
+15889547852	施宇玮
+13060223541	谭琪瑶
+13025865421	熊亚云
+17825402092	陶顺波
+
+

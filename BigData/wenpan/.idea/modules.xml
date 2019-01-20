@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="ProjectModuleManager">
+    <modules>
+      <module fileurl="file://$PROJECT_DIR$/bigdata/bigdata.iml" filepath="$PROJECT_DIR$/bigdata/bigdata.iml" />
+      <module fileurl="file://$PROJECT_DIR$/bigdata/bigdataproject/bigdataproject.iml" filepath="$PROJECT_DIR$/bigdata/bigdataproject/bigdataproject.iml" />
+      <module fileurl="file://$PROJECT_DIR$/bigdata/bigdataproject/wenpan-project-ct/ct-analysis/ct-analysis.iml" filepath="$PROJECT_DIR$/bigdata/bigdataproject/wenpan-project-ct/ct-analysis/ct-analysis.iml" />
+      <module fileurl="file://$PROJECT_DIR$/bigdata/bigdataproject/wenpan-project-ct/ct-cache-ext/ct-cache-ext.iml" filepath="$PROJECT_DIR$/bigdata/bigdataproject/wenpan-project-ct/ct-cache-ext/ct-cache-ext.iml" />
+      <module fileurl="file://$PROJECT_DIR$/bigdata/bigdataproject/wenpan-project-ct/ct-common/ct-common.iml" filepath="$PROJECT_DIR$/bigdata/bigdataproject/wenpan-project-ct/ct-common/ct-common.iml" />
+      <module fileurl="file://$PROJECT_DIR$/bigdata/bigdataproject/wenpan-project-ct/ct-consumer/ct-consumer.iml" filepath="$PROJECT_DIR$/bigdata/bigdataproject/wenpan-project-ct/ct-consumer/ct-consumer.iml" />
+      <module fileurl="file://$PROJECT_DIR$/bigdata/bigdataproject/wenpan-project-ct/ct-consumer-coprocessor/ct-consumer-coprocessor.iml" filepath="$PROJECT_DIR$/bigdata/bigdataproject/wenpan-project-ct/ct-consumer-coprocessor/ct-consumer-coprocessor.iml" />
+      <module fileurl="file://$PROJECT_DIR$/bigdata/bigdataproject/wenpan-project-ct/ct-producer/ct-producer.iml" filepath="$PROJECT_DIR$/bigdata/bigdataproject/wenpan-project-ct/ct-producer/ct-producer.iml" />
+      <module fileurl="file://$PROJECT_DIR$/bigdata/bigdataproject/wenpan-project-ct/ct-web/ct-web.iml" filepath="$PROJECT_DIR$/bigdata/bigdataproject/wenpan-project-ct/ct-web/ct-web.iml" />
+      <module fileurl="file://$PROJECT_DIR$/wenpan.iml" filepath="$PROJECT_DIR$/wenpan.iml" />
+      <module fileurl="file://$PROJECT_DIR$/bigdata/bigdataproject/wenpan-project-ct/wenpan-project-ct.iml" filepath="$PROJECT_DIR$/bigdata/bigdataproject/wenpan-project-ct/wenpan-project-ct.iml" />
+    </modules>
+  </component>
+</project>

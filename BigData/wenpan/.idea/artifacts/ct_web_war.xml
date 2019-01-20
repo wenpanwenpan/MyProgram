@@ -1,0 +1,8 @@
+<component name="ArtifactManager">
+  <artifact type="war" name="ct-web:war">
+    <output-path>$PROJECT_DIR$/bigdata/bigdataproject/wenpan-project-ct/ct-web/target</output-path>
+    <root id="archive" name="ct-web.war">
+      <element id="artifact" artifact-name="ct-web:war exploded" />
+    </root>
+  </artifact>
+</component>

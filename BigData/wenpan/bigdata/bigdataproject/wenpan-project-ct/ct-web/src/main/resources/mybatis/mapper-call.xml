@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.wp.ct.web.dao.CalllogDao">
+
+
+    <!--查询一个电话号码在指定的一年中每个月份的通话信息-->
+    <select id="queryMonthDatas" resultType="com.wp.ct.web.bean.Calllog">
+        SELECT * FROM ct_call WHERE telid = (
+          SELECT
+            ID
+          FROM ct_user
+          WHERE tel = #{tel}
+        ) AND dateid IN (
+          SELECT
+            ID
+          FROM ct_date
+          WHERE year = #{year} AND month != '' AND day = ''
+        )
+    </select>
+
+</mapper>
